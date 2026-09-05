@@ -1,0 +1,14 @@
+name: sample_project
+
+channels:
+  - defaults
+
+dependencies:
+  - python=3.14
+  - numpy
+  - pandas
+  - matplotlib
+  - scipy
+  - scikit-learn
+  - notebook
+  - ipykernel

@@ -1,0 +1,30 @@
+/* CHANGED: Import Playfair Display (Serif) and Plus Jakarta Sans (Body) */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #0c0a09; 
+    color: #e7e5e4;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  h1, h2, h3, .font-serif-headline {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0c0a09;
+}
+::-webkit-scrollbar-thumb {
+  background: #292524;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #44403c;
+}

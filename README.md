@@ -22,9 +22,10 @@ This project uses a decoupled split-architecture:
 The quantitative engine evaluates historical technical indicators using an optimized machine learning pipeline. 
 
 ### Experimentation & Tuning Process
-1. **Multi-Model Training:** Initially, 8 distinct baseline models were trained simultaneously to evaluate initial feature response.
-2. **Hyperparameter Optimization:** The top 3 performing model architectures were selected and passed through `GridSearchCV` for exhaustive hyperparameter tuning.
-3. **Evaluation & Selection:** Final evaluation on unseen test data revealed that the optimized K-Nearest Neighbors (KNN) configuration significantly outperformed the other candidates.
+1. **Feature Engineering:** Introduced **27** derived features from the original columns . Technical indicators, rolling statistics, and lagged signals were included so the model is trained on derived quantities which actively avoids any absolute value getting passed to the model. This prevents the model from cheating by just predicting a value close to the present day closing values.
+2. **Multi-Model Training:** Initially, 8 distinct baseline models were trained simultaneously to evaluate initial feature response.
+3. **Hyperparameter Optimization:** The top 3 performing model architectures were selected and passed through `GridSearchCV` for exhaustive hyperparameter tuning.
+4. **Evaluation & Selection:** Final evaluation on unseen test data revealed that the optimized K-Nearest Neighbors (KNN) configuration significantly outperformed the other candidates.
 
 ### Final Optimized KNN Hyperparameters
 * **`n_neighbors`**: 3
@@ -39,8 +40,22 @@ The quantitative engine evaluates historical technical indicators using an optim
 | **Validation Set** | 51.88% | 0.5156 | 0.5344 |
 | **Test Set** | **68.69%** | **0.7327** | **0.7048** |
 
-* **Beating the Baseline:** Financial markets exhibit high noise and near random-walk properties. A directional accuracy of **68.69%** on unseen test data significantly outperforms random baseline guessing (50%).
-* **High Precision Focus:** The model maintains a **73.27% Precision** score, meaning when it *does* trigger a high-conviction signal, it has a high reliability rate of being correct, minimizing false positives.
+> **Note on the validation dip:** Validation accuracy is noticeably lower than test. This is because the market window during the validation period was exceptionally choppy and unpredictable. The test split happens to fall in a more trend-following period, which flatters the test number.
+
+* **Baseline comparison:** Directional accuracy of **68.69%** on the held-out test split, versus a 50% random baseline and a naive "tomorrow = today's direction" persistence baseline. The gap is meaningful but should be read with caution, because the model is trained on only one historical regime.
+* **Precision over recall:** The model is tuned toward **precision (73.27%)** rather than raw coverage. When it fires an UP/DOWN signal, it is correct roughly 3 times out of 4. This trades signal frequency for reliability.
+* **Honest scope:** This is an **educational ML pipeline demonstration**, not a tradable strategy. This model which looks strong on one test window can and will degrade quickly in live markets.
+
+---
+
+## 🧪 Methodology & Leakage Prevention
+
+This is a time-series problem, so the evaluation respects temporal order end-to-end:
+
+* **Chronological split** — train / validation / test are split in time order (no shuffling), so no future information leaks into training.
+* **Time-aware cross-validation** — hyperparameter tuning uses `TimeSeriesSplit` rather than default K-Fold, ensuring every validation fold only sees data from *before* it.
+* **Train-only fitting** — all feature scaling is fit on the training set only, then applied to validation/test.
+
 ---
 
 ## ⚙️ Local Development Setup

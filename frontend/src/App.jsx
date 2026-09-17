@@ -5,6 +5,9 @@ import { ArrowUpRight, ArrowDownRight, Clock, Activity } from 'lucide-react';
 
 export default function App() {
   const todayStr = new Date().toISOString().split('T')[0];
+  
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
   const [date, setDate] = useState(todayStr);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -18,7 +21,7 @@ export default function App() {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/predict`, {
+      const response = await axios.get(`${API_BASE_URL}/api/predict`, {
         params: { target_date: selectedDate }
       });
       setData(response.data);
